@@ -11,6 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using learn_dotnet.Models;
+using learn_dotnet.Interfaces;
+using learn_dotnet.Repositories;
+using Microsoft.Extensions.Options;
+
 namespace learn_dotnet
 {
     public class Startup
@@ -26,6 +31,16 @@ namespace learn_dotnet
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.Configure<CustomersMongoSettings>(
+                Configuration.GetSection(nameof(CustomersMongoSettings))
+            );
+
+            services.AddSingleton<ICustomersMongoSettings>( sp =>
+                sp.GetRequiredService<IOptions<CustomersMongoSettings>>().Value
+            );
+
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +51,7 @@ namespace learn_dotnet
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
