@@ -24,13 +24,46 @@ namespace learn_dotnet.Controllers
             return Ok(customers);
         }
 
+        [HttpGet("{id:length(24)}", Name = "GetCustomer")]
+        public IActionResult Get(string id)
+        {
+            var customer = _repository.Get(id);
+            if (customer == null) {
+                return NotFound();
+            }
+
+            return Ok(customer);
+        }
+
         [HttpPost]
         public IActionResult SaveCustomer([FromBody] Customer customer)
         {
             var newCustomer = _repository.Create(customer);
-            var customers = _repository.GetAll();
-            return Ok(customers);
+            return Ok(newCustomer);
         }
 
+        [HttpPut("{id:length(24)}")]
+        public IActionResult UpdateCustomer(string id, Customer newCustomer)
+        {
+            var customer = _repository.Get(id);
+            if (customer == null) {
+                return NotFound();
+            }
+
+            _repository.Update(id, newCustomer);
+            return NoContent();
+        }
+
+        [HttpDelete("{id:length(24)}")]
+        public IActionResult Delete(string id)
+        {
+            var customer = _repository.Get(id);
+            if (customer == null) {
+                return NotFound();
+            }
+
+            _repository.Delete(customer.Id);
+            return NoContent();
+        }
     }
 }
